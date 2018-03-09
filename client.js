@@ -1,32 +1,50 @@
-const request = require('request');
+const request = require('request')
+const fs = require('fs')
+const path = require('path')
 
-const options = {
-    method: 'POST',
-    uri: 'https://api.github.com/graphql',
-    json: true,
-    headers: {
-        'User-Agent': 'nick-nance-ck',
-        'Authorization': 'token 05fac20af1bddd12055308ab9e7d881eebd13cbc'
-    },
-    body: {
-        query: `{
-            search(query: "org:ck-private language:Scala", type: REPOSITORY, first: 10) {
-                repositoryCount
-                edges {
-                  node {
-                    ... on Repository {
-                      name
-                      descriptionHTML
-                      updatedAt
-                    }
-                  }
-                }
-            }
-        }`
-    }
+const buildRequestOptions = (gqlQuery) => {
+    return Promise.resolve({
+        method: 'POST',
+        uri: 'https://api.github.com/graphql',
+        json: true,
+        headers: {
+            'User-Agent': 'nick-nance-ck',
+            'Authorization': 'token b1f233c0422807aec21d706327d1bb38935bfb68'
+        },
+        body: { query: gqlQuery }
+    })
 }
 
-request(options, (err, res) => {
-  if (err) { return console.error(err); }
-  console.dir(res.body, { depth: null });
-})
+const loadQuery = (fileName) => {
+    const fullPath = path.resolve(`./queries/${fileName}.gql`)
+    return new Promise((resolve, reject) => {
+        fs.readFile(fullPath, 'utf-8', (err, data) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(data)
+            }
+        })
+    })
+}
+
+const makeRequest = (options) => {
+    return new Promise((resolve, reject) => {
+        request(options, (err, res) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(res.body)
+            }
+        })
+    })
+}
+
+const outputToConsole = (results) => {
+    console.dir(results, { depth: null })
+}
+
+loadQuery('searchReposByLang')
+    .then(buildRequestOptions)
+    .then(makeRequest)
+    .then(outputToConsole)
