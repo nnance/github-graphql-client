@@ -9,7 +9,7 @@ const buildRequestOptions = (gqlQuery) => {
         json: true,
         headers: {
             'User-Agent': 'nick-nance-ck',
-            'Authorization': 'token b1f233c0422807aec21d706327d1bb38935bfb68'
+            'Authorization': `token ${process.env.TOKEN}`
         },
         body: { query: gqlQuery }
     })
