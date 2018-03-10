@@ -1,0 +1,15 @@
+query {
+  repository(owner: "hapijs", name: "hapi") {
+    stargazers(first: 100) {
+      pageInfo {
+        endCursor
+      }
+      nodes {
+        company
+        bio
+        name
+        location
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+query ($cursor: String) {
+  repository(owner: "hapijs", name: "hapi") {
+    stargazers(first: 100, after: $curser) {
+      pageInfo {
+        endCursor
+      }
+      nodes {
+        company
+        bio
+        name
+        location
+      }
+    }
+  }
+}
