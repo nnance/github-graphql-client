@@ -1,6 +1,7 @@
 const request = require('request')
-const fs = require('fs')
+const { readFile } = require('fs')
 const path = require('path')
+const { githubRequest, stdOut } = require('./readables')
 
 const buildRequestOptions = (gqlQuery) => {
     return Promise.resolve({
@@ -18,7 +19,7 @@ const buildRequestOptions = (gqlQuery) => {
 const loadQuery = (fileName) => {
     const fullPath = path.resolve(`./queries/${fileName}.gql`)
     return new Promise((resolve, reject) => {
-        fs.readFile(fullPath, 'utf-8', (err, data) => {
+        readFile(fullPath, 'utf-8', (err, data) => {
             if (err) {
                 reject(err)
             } else {
@@ -44,7 +45,9 @@ const outputToConsole = (results) => {
     console.dir(results, { depth: null })
 }
 
-loadQuery('searchReposByLang')
+const fileName = process.argv[process.argv.length - 1]
+loadQuery(fileName)
     .then(buildRequestOptions)
     .then(makeRequest)
     .then(outputToConsole)
+
