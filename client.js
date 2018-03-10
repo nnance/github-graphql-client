@@ -1,7 +1,6 @@
 const request = require('request')
 const { readFile } = require('fs')
 const path = require('path')
-const { githubRequest, stdOut } = require('./readables')
 
 const buildRequestOptions = (gqlQuery) => {
     return Promise.resolve({
