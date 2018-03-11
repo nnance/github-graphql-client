@@ -1,15 +1,7 @@
-query {
-  repository(owner: "hapijs", name: "hapi") {
-    stargazers(first: 100) {
-      pageInfo {
-        endCursor
-      }
-      nodes {
-        company
-        bio
-        name
-        location
-      }
+query StarGazers($owner: String!, $name: String!, $cursor: String) {
+  repository(owner: $owner, name: $name) {
+    stargazers(first: 100, after: $cursor) {
+      ...starGazerFields
     }
   }
 }
