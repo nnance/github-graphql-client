@@ -3,11 +3,11 @@
         repositoryCount
         edges {
             node {
-            ... on Repository {
-                name
-                descriptionHTML
-                updatedAt
-            }
+                ... on Repository {
+                    name
+                    descriptionHTML
+                    updatedAt
+                }
             }
         }
     }
