@@ -9,13 +9,13 @@ const {
 
 const {Readable} = require('stream')
 
-const cursorStream = (options) => {
+module.exports = (owner, name) => {
     const streamer = new Readable({
         objectMode: true,
-        read(opts) {
-            return makeRequest(options).then((data) => {
-                if (this.requestCount < 2) {
-                    this.requestCount++
+        read(size) {
+            return sendRequest(owner, name, this.cursor).then((data) => {
+                if (this.cursor != null && this.requestCount < 3) {
+                    this.cursor = data.data.repository.stargazers.pageInfo.endCursor || null
                     this.push(data)
                 } else {
                     this.push(null)
@@ -23,16 +23,17 @@ const cursorStream = (options) => {
             })
         }
     })
+    streamer.cursor = 1
     streamer.requestCount = 0
-    return streamer
+    return Promise.resolve(streamer)
 }
 
-module.exports = (owner, name) => {
+const sendRequest = (owner, name, cursor) => {
     const path = './queries'
     return loadQuery(`${path}/starGazerFragment.gql`)
             .then(appendQuery(`${path}/searchStarGazers.gql`))
             .then(buildBodyWithVariables({owner, name}))
             .then(buildHeaders)
             .then(buildRequestOptions)
-            .then(cursorStream)
+            .then(makeRequest)
 }
