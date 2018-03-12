@@ -1,5 +1,4 @@
 const readables = require('./readables')
-const { searchStarGazers } = require('./stargazers')
 const { stdOut } = require('./writeables')
 
 async function main(fileName) {
