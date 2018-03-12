@@ -3,9 +3,8 @@ const {
     buildBody,
     buildHeaders,
     buildRequestOptions,
+    createStream,
 } = require('./graphql')
-
-const {createStream} = require('./graphql-streams')
 
 module.exports = () => {
     return loadQuery('./queries/searchReposByLang.gql')

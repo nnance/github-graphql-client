@@ -1,6 +1,6 @@
 const { request } = require('https')
 const { readFile } = require('fs')
-const path = require('path')
+const { resolve } = require('path')
 const { Readable } = require('stream')
 
 const buildRequestOptions = ({headers, body}) => Promise.resolve({
@@ -32,9 +32,9 @@ const buildBodyWithVariables = (variables) => (query) => Promise.resolve({
     body: JSON.stringify({query, variables})
 })
 
-const loadQuery = (fileName) => new Promise((resolve, reject) => {
-    readFile(path.resolve(fileName), 'utf-8', (err, data) => {
-        (err) ? reject(err) : resolve(data)
+const loadQuery = (fileName) => new Promise((res, reject) => {
+    readFile(resolve(fileName), 'utf-8', (err, data) => {
+        (err) ? reject(err) : res(data)
     })
 })
 
@@ -51,6 +51,20 @@ const makeRequest = ({options, body}) => new Promise((resolve, reject) => {
     }).write(body)
 })
 
+const createStream = (options) => new Readable({
+    objectMode: true,
+    read(opts) {
+        if (!this.requestCompleted) {
+            return makeRequest(options).then((data) => {
+                this.requestCompleted = true
+                this.push(data)
+            })
+        } else {
+            this.push(null)
+        }
+    }
+})
+
 module.exports = {
     buildBody,
     buildBodyWithVariables,
@@ -59,4 +73,5 @@ module.exports = {
     loadQuery,
     appendQuery,
     makeRequest,
+    createStream,
 }
