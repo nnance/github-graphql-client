@@ -1,22 +1,17 @@
 const {
     loadQuery,
     appendQuery,
-    buildBody,
+    buildBodyWithVariables,
     buildHeaders,
-    buildRequestOptions,
-    createStream,
-} = require('./readables')
+} = require('./graphql')
 
-const searchStarGazers = (owner, name) => {
+const {createStream} = require('./graphql-streams')
+
+module.exports = (owner, name) => {
     const path = './queries'
     return loadQuery(`${path}/starGazerFragment.gql`)
             .then(appendQuery(`${path}/searchStarGazers.gql`))
-            .then(buildBody({owner, name}))
+            .then(buildBodyWithVariables({owner, name}))
             .then(buildHeaders)
-            .then(buildRequestOptions)
-            .then(createStream)
-}
-
-module.exports = {
-    searchStarGazers
+            .then(createStream())
 }

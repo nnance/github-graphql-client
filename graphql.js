@@ -24,7 +24,11 @@ const buildHeaders = ({body}) => Promise.resolve({
     }
 })
 
-const buildBody = (variables) => (query) => Promise.resolve({
+const buildBody = (query) => Promise.resolve({
+    body: JSON.stringify({query})
+})
+
+const buildBodyWithVariables = (variables) => (query) => Promise.resolve({
     body: JSON.stringify({query, variables})
 })
 
@@ -49,6 +53,7 @@ const makeRequest = ({options, body}) => new Promise((resolve, reject) => {
 
 module.exports = {
     buildBody,
+    buildBodyWithVariables,
     buildHeaders,
     buildRequestOptions,
     loadQuery,
