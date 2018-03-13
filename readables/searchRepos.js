@@ -6,10 +6,10 @@ const {
     createStream,
 } = require('./graphql')
 
-module.exports = () => {
+module.exports = ({user, token}) => {
     return loadQuery('./queries/searchReposByLang.gql')
             .then(buildBody)
-            .then(buildHeaders)
+            .then(buildHeaders({user, token}))
             .then(buildRequestOptions)
             .then(createStream)
 }

@@ -14,13 +14,13 @@ const buildRequestOptions = ({headers, body}) => Promise.resolve({
     }
 })
 
-const buildHeaders = ({body}) => Promise.resolve({
+const buildHeaders = ({user, token}) => ({body}) => Promise.resolve({
     body,
     headers: {
         'Content-Type': 'application/json',
         'Content-Length': body.length,
-        'User-Agent': `${process.env.USER}`,
-        'Authorization': `token ${process.env.TOKEN}`
+        'User-Agent': user,
+        'Authorization': `token ${token}`
     }
 })
 
@@ -38,9 +38,8 @@ const loadQuery = (fileName) => new Promise((res, reject) => {
     })
 })
 
-const appendQuery = (fileName) => (query) => {
-    return loadQuery(fileName).then((results) => query + results)
-}
+const appendQuery = (fileName) => (query) =>
+    loadQuery(fileName).then((results) => query + results)
 
 const makeRequest = ({options, body}) => new Promise((resolve, reject) => {
     request(options, (res) => {

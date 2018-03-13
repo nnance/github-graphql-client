@@ -8,7 +8,7 @@ async function main(fileName) {
     // const input = await githubRequest(fileName)
     // const input = await searchStarGazers(process.argv[3], process.argv[4])
     if (readables[fileName]) {
-        const input = await readables[fileName](process.argv[3], process.argv[4])
+        const input = await readables[fileName](process.env.USER, process.env.TOKEN, process.argv[3], process.argv[4])
         const outputName = `./${fileName}.csv`
         if (existsSync(outputName)) {
             unlinkSync(outputName)

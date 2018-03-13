@@ -9,17 +9,19 @@ const {
 
 const {Readable} = require('stream')
 
-const sendRequest = (owner, name, cursor) => {
+const createRequest = ({user, token, owner, name}) => (cursor) => {
     const path = './queries'
     return loadQuery(`${path}/starGazerFragment.gql`)
             .then(appendQuery(`${path}/searchStarGazers.gql`))
             .then(buildBodyWithVariables({owner, name, cursor}))
-            .then(buildHeaders)
+            .then(buildHeaders({user, token}))
             .then(buildRequestOptions)
             .then(makeRequest)
 }
 
-module.exports = (owner, name) => {
+module.exports = (user, token, owner, name) => {
+    const sendRequest = createRequest({user, token, owner, name})
+
     const streamer = new Readable({
         objectMode: true,
         read(size) {
@@ -29,9 +31,9 @@ module.exports = (owner, name) => {
                 this.push(results)
             }
             if (this.requestCount == 0) {
-                return sendRequest(owner, name).then((results) => pushResults(results))
+                return sendRequest().then((results) => pushResults(results))
             } else if (this.cursor) {
-                return sendRequest(owner, name, this.cursor).then((results) => pushResults(results))
+                return sendRequest(this.cursor).then((results) => pushResults(results))
             } else {
                 this.push(null)
             }
