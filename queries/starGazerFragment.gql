@@ -1,0 +1,11 @@
+fragment starGazerFields on StargazerConnection {
+    pageInfo {
+        endCursor
+      }
+      nodes {
+        company
+        bio
+        name
+        location
+      }
+}

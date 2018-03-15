@@ -1,32 +1,32 @@
-const request = require('request');
+const readables = require('./readables')
+const { stdOut } = require('./writeables')
+const { locationFilter } = require('./transforms/filter')
+const { csvTransform } = require('./transforms/csv')
+const { createWriteStream, existsSync, unlinkSync } = require('fs')
 
-const options = {
-    method: 'POST',
-    uri: 'https://api.github.com/graphql',
-    json: true,
-    headers: {
-        'User-Agent': 'nick-nance-ck',
-        'Authorization': 'token 05fac20af1bddd12055308ab9e7d881eebd13cbc'
-    },
-    body: {
-        query: `{
-            search(query: "org:ck-private language:Scala", type: REPOSITORY, first: 10) {
-                repositoryCount
-                edges {
-                  node {
-                    ... on Repository {
-                      name
-                      descriptionHTML
-                      updatedAt
-                    }
-                  }
-                }
-            }
-        }`
+const searchStarGazers = async (user, token) => {
+    const input = await readables.stargazers(user, token, process.argv[3], process.argv[4])
+    const outputName = './stargazers.csv'
+    if (existsSync(outputName)) {
+        unlinkSync(outputName)
     }
+    const output = createWriteStream(outputName, {encoding: 'utf8', autoClose: true})
+    input.pipe(locationFilter).pipe(csvTransform).pipe(output)
 }
 
-request(options, (err, res) => {
-  if (err) { return console.error(err); }
-  console.dir(res.body, { depth: null });
-})
+const searchReposByLang = async (user, token) => {
+    const input = await readables.searchRepos(user, token)
+    input.pipe(stdOut())
+}
+
+const commands = {
+    searchStarGazers,
+    searchReposByLang
+}
+
+async function main(fileName) {
+    commands[fileName] ? commands[fileName](process.env.USER, process.env.TOKEN) : console.error('Invalid command')
+}
+
+const fileName = process.argv[2]
+main(fileName)

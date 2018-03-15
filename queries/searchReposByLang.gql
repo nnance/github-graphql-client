@@ -1,0 +1,14 @@
+{
+    search(query: "org:ck-private language:Scala", type: REPOSITORY, first: 10) {
+        repositoryCount
+        edges {
+            node {
+                ... on Repository {
+                    name
+                    descriptionHTML
+                    updatedAt
+                }
+            }
+        }
+    }
+}

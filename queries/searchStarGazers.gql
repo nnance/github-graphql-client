@@ -1,0 +1,7 @@
+query StarGazers($owner: String!, $name: String!, $cursor: String) {
+  repository(owner: $owner, name: $name) {
+    stargazers(first: 100, after: $cursor) {
+      ...starGazerFields
+    }
+  }
+}
